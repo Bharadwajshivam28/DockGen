@@ -27,10 +27,3 @@ Download the DockGen.go file and run the CLI using the following bash command:
    ```bash
    go run DockGen.go
    ```
-
-## Images
-
-Here are a couple of screenshots to give you a glimpse of DockGen in action:
-
-![Screenshot 1](img1.png)
-![Screenshot 2](img2.png)
