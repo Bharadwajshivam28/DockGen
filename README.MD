@@ -23,7 +23,7 @@ Download the DockGen.go file and run the CLI using the following bash command:
    ```bash
    curl -sLJOH "Accept: application/vnd.github.v3.raw" https://api.github.com/repos/Bharadwajshivam28/DockGen/contents/DockGen.go
    ```
-   This will download the DockGen.go file and now to run the CLI run the command:
+   This will download the DockGen.go file and now to run the CLI by the command:
    ```bash
    go run DockGen.go
    ```
