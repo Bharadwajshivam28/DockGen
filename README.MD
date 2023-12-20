@@ -16,17 +16,21 @@ Ensure that you have the following prerequisites installed on your system:
 
 - [Go](https://golang.org/dl/): Make sure Go is installed on your machine before using this CLI.
 
-## Usage
+## Downloading and Using DockGen
 
-Download the DockGen.go file and run the CLI using the following bash commands:
+Download the DockGen.go file and run the CLI using the following bash command:
 
    ```bash
    curl -sLJOH "Accept: application/vnd.github.v3.raw" https://api.github.com/repos/Bharadwajshivam28/DockGen/contents/DockGen.go
+   ```
+   This will download the DockGen.go file and now to run the CLI run the command:
+   ```bash
    go run DockGen.go
+   ```
 
-### users should run the commands in their specific project directory where they intend to create the Dockerfile.
+## Images
 
-## Screenshots of DockGen 
+Here are a couple of screenshots to give you a glimpse of DockGen in action:
 
-![](img1.png)
-![](img2.png)
+![Screenshot 1](img1.png)
+![Screenshot 2](img2.png)
