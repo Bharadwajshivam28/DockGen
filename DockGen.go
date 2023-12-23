@@ -8,18 +8,18 @@ import (
 )
 
 const (
-    colorReset  = "\033[0m"
-    colorRed    = "\033[31m"
-    colorGreen  = "\033[32m"
-    colorMagenta = "\033[35m"
-	textBold      = "\033[1m"
+	colorReset   = "\033[0m"
+	colorRed     = "\033[31m"
+	colorGreen   = "\033[32m"
+	colorMagenta = "\033[35m"
+	textBold     = "\033[1m"
 )
 
 func main() {
-	fmt.Println(colorGreen + textBold+ "Welcome! I will create your Dockerfile in seconds 🎉✨" + colorReset)
+	fmt.Println(colorGreen + textBold + "Welcome! I will create your Dockerfile in seconds 🎉✨" + colorReset)
 	fmt.Println()
 	fmt.Println(colorRed + textBold + "Made with ❤️ by Shivam" + colorReset)
-	languages := []string{"node", "python", "rust", "go", "java"}
+	languages := []string{"node", "python", "rust", "go", "java", "ubuntu"}
 	languagesString := strings.Join(languages, ", ")
 	if _, err := os.Stat("Dockerfile"); err == nil {
 		fmt.Println()
@@ -52,33 +52,39 @@ func main() {
 
 		if isValidLanguage(userInputLanguage, languages) {
 			fmt.Println()
-			fmt.Print(colorMagenta + textBold+ "Enter the version of your application that you want (e.g., 1.0): " + colorReset)
+			fmt.Print(colorMagenta + textBold + "Enter the version of your application that you want (e.g., 1.0): " + colorReset)
 			userInputVersion, err := getUserInput()
 			if err != nil {
 				fmt.Println()
 				fmt.Println("Error reading input:", err)
 				return
 			}
-			println()
-			fmt.Println(colorRed + "This step will be repeated, if you wish to escape this step type 'done' " + colorReset)
-			userRunCommands := getUserMultiLineCommands(colorMagenta + textBold + "Enter the command that install everything required for your application (e.g., apt-get install -y vim or npm install" + colorReset)
 			fmt.Println()
-			fmt.Println(colorRed+ "This step will be repeated, if you wish to escape this step type 'escape' " + colorReset)
+
+			fmt.Println(colorRed + "This step will be repeated, if you wish to escape this step type 'done' " + colorReset)
+			userLabelCommands := getUserMultiLineCommands(colorMagenta + textBold + "Enter the Label (e.g. description=, maintainer=)" + colorReset)
+			fmt.Println()
+
+			fmt.Println(colorRed + "This step will be repeated, if you wish to escape this step type 'done' " + colorReset)
+			userRunCommands := getUserMultiLineCommands(colorMagenta + textBold + "Enter the command that installs everything required for your application (e.g., 'apt-get' install -y vim or npm install)" + colorReset)
+			fmt.Println()
+
+			fmt.Println(colorRed + "This step will be repeated, if you wish to escape this step type 'done' " + colorReset)
 			userExposeCommands := getUserMultiLineCommands(colorMagenta + textBold + "Enter the port on which your app will listen (type 'done' to escape this step)" + colorReset)
 			userCmdCommands := getUserCommand(colorMagenta + textBold + "Enter the final Command that starts your application " + colorReset)
 
-			err = generateDockerfile(userInputLanguage, userInputVersion, userRunCommands, userExposeCommands, userCmdCommands)
+			err = generateDockerfile(userInputLanguage, userInputVersion, userRunCommands, userLabelCommands, userExposeCommands, userCmdCommands)
 			if err != nil {
 				fmt.Println()
-				fmt.Println(colorRed + textBold+  "Error generating Dockerfile:", err)
+				fmt.Println(colorRed + textBold + "Error generating Dockerfile:", err)
 			} else {
 				fmt.Println()
-				fmt.Println(colorGreen+ textBold+ "Dockerfile generated successfully!" + colorReset)
+				fmt.Println(colorGreen + textBold + "Dockerfile generated successfully!" + colorReset)
 			}
 			break
 		} else {
 			fmt.Println()
-			fmt.Println(colorMagenta+ textBold+ "Please try again. Valid application platforms are:", languagesString + colorReset)
+			fmt.Println(colorMagenta + textBold + "Please try again. Valid application platforms are:", languagesString + colorReset)
 		}
 	}
 }
@@ -136,18 +142,26 @@ func getUserCommand(commandType string) string {
 	return userInput
 }
 
-func generateDockerfile(selectedLanguage, selectedVersion string, userRunCommands, userExposeCommands []string, userCmdCommands string) error {
+func generateDockerfile(selectedLanguage, selectedVersion string, userRunCommands, userLabelCommands, userExposeCommands []string, userCmdCommands string) error {
 	dockerfileContent := fmt.Sprintf(`FROM %s:%s
-
+	
 WORKDIR /app
 
 COPY . /app
 
 `, selectedLanguage, selectedVersion)
 
-	for i, runCommand := range userRunCommands {
+	for i, labelCommand := range userLabelCommands {
 		if i > 0 {
 			dockerfileContent += "\n\n"
+		}
+		dockerfileContent += fmt.Sprintf("LABEL %s", labelCommand)
+	}
+	dockerfileContent += "\n\n" // Add a newline here
+
+	for i, runCommand := range userRunCommands {
+		if i > 0 {
+			dockerfileContent += "\n"
 		}
 		dockerfileContent += fmt.Sprintf("RUN %s", runCommand)
 	}
@@ -156,7 +170,7 @@ COPY . /app
 		dockerfileContent += "\n\n"
 		for i, exposeCommand := range userExposeCommands {
 			if i > 0 {
-				dockerfileContent += "\n\n"
+				dockerfileContent += "\n"
 			}
 			dockerfileContent += fmt.Sprintf("EXPOSE %s", exposeCommand)
 		}
